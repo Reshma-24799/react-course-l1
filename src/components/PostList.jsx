@@ -1,45 +1,45 @@
-import { useState } from 'react';
 import Post from './Post'
 import classes from './PostList.module.css'
 import NewPost from './NewPost';
 import Modal from './Modal';
+import { useState } from 'react';
 const PostList = ({isPosting, onStopPosting}) => {
-  const [ textC, setText ] = useState('');
-  const [ name, setName ] = useState('');
+  const [posts, setPosts] = useState([]);
 
-
-  function changeText(event) {
-    console.log(event.target.value)
-    setText(event.target.value);
+  function addPostHandler(postData){
+    setPosts((existingPosts) => [postData, ...existingPosts]);
   }
-  function changeName(event) {
-    setName(event.target.value);
-  }
-
   return (
     <>
       {
         isPosting && (
           <Modal onClose={onStopPosting}>
             <NewPost 
-              onTextChange={changeText} 
-              onNameChange={changeName} />
+              onCancel={onStopPosting}
+              onAddPost={addPostHandler}/>
           </Modal>
         )
       }
-
-    <ul className={classes.posts}>
-        <Post
-        name = {name}
-        text={textC}
-      />
-      <Post
-        name ={name}
-        text={textC}
-      />
-    </ul>
-
-    </>
+      {posts.length > 0 && (
+        <ul className={classes.posts}>
+        {posts.map((post) =>
+          <Post
+            key={post.name}
+            name={post.name}
+            text={post.text}
+          />
+        
+        )}
+       
+      </ul>
+      )}
+      {posts.length === 0  &&  
+          <div style={{textAlign: 'center', color: 'white'}}>
+            <h2>There are no posts yet</h2>
+            <p>Start adding some!</p>
+          </div>
+      }
+          </>
   )
 }
 
